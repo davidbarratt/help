@@ -1,11 +1,13 @@
 <?php
 
-namespace Help;
-
 use Symfony\Component\HttpKernel\Kernel;
 use Symfony\Component\Config\Loader\LoaderInterface;
 
+// Symfony libraries require an AppKernel in the global namespace which is not
+// allowed under PSR-2.
+// @codingStandardsIgnoreStart
 class AppKernel extends Kernel
+// @codingStandardsIgnoreEnd
 {
     public function registerBundles()
     {
