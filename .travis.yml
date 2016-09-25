@@ -5,4 +5,4 @@ before_script:
   - 'docker-compose up -d api'
   - 'docker-compose run composer install'
 script:
-  - 'docker-compose exec api ./vendor/bin/phpcs --report=summary .'
+  - 'docker-compose exec -T api ./vendor/bin/phpcs --report=summary .'
