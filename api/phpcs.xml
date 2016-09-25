@@ -8,6 +8,4 @@
   <exclude-pattern>var/SymfonyRequirements.php</exclude-pattern>
   <exclude-pattern>vendor/</exclude-pattern>
   <exclude-pattern>web/config.php</exclude-pattern>
-
-  <arg value="p"/>
 </ruleset>
