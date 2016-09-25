@@ -8,6 +8,16 @@ services:
       - api
     ports:
       - "8000:80"
+  database:
+    image: mariadb:10.1
+    volumes:
+      - ./data:/var/lib/mysql/mysql
+    environment:
+      MYSQL_RANDOM_ROOT_PASSWORD: 'yes'
+      MYSQL_DATABASE: 'customer'
+      # Override this on production.
+      MYSQL_USER: 'user'
+      MYSQL_USER: 'password'
   api:
     build: './services/php'
     volumes:
