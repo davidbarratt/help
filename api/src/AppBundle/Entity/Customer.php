@@ -125,4 +125,3 @@ class Customer
         return $this->email;
     }
 }
-

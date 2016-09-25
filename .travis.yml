@@ -3,3 +3,5 @@ services:
   - docker
 before_script:
   - docker-compose up -d
+script:
+  - 'docker-compose exec api ./vendor/bin/phpcs --report=summary .'
