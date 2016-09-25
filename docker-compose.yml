@@ -1,5 +1,6 @@
 version: '2'
 services:
+
   server:
     image: nginx:stable
     volumes:
@@ -8,24 +9,46 @@ services:
       - api
     ports:
       - "8000:80"
+
   database:
     image: mariadb:10.1
     volumes:
-      - ./data:/var/lib/mysql/mysql
+      - ./data:/var/lib/mysql
+    ports:
+      - "3307:3306"
     environment:
       MYSQL_RANDOM_ROOT_PASSWORD: 'yes'
       MYSQL_DATABASE: 'customer'
       # Override this on production.
       MYSQL_USER: 'user'
-      MYSQL_USER: 'password'
+      MYSQL_PASSWORD: 'password'
+
   api:
     build: './services/php'
     volumes:
       - ./api:/var/www/html
       - ./config/php:/usr/local/etc/php/conf.d
+    links:
+      - database
+    environment:
+      SYMFONY__DATABASE__HOST: 'database'
+      SYMFONY__DATABASE__PORT: 3306
+      SYMFONY__DATABASE__NAME: 'customer'
+      # Override this on production.
+      SYMFONY__SECRET: 'uqk`D3aDgN75{+p#'
+      SYMFONY__DATABASE__USER: 'user'
+      SYMFONY__DATABASE__PASSWORD: 'password'
+
   composer:
     image: composer/composer
     volumes:
       - ./api:/app
-    command:
-      - 'install'
+    command: 'install'
+    environment:
+      # All of the paramaters need to exist.
+      SYMFONY__SECRET: ''
+      SYMFONY__DATABASE__HOST: ''
+      SYMFONY__DATABASE__PORT: 3306
+      SYMFONY__DATABASE__NAME: ''
+      SYMFONY__DATABASE__USER: ''
+      SYMFONY__DATABASE__PASSWORD: ''
