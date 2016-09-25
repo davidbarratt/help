@@ -5,6 +5,7 @@ services:
     image: nginx:stable
     volumes:
       - ./config/nginx:/etc/nginx/conf.d/
+      - ./static:/usr/share/nginx/html/static
     links:
       - api
     ports:
@@ -44,7 +45,9 @@ services:
     image: composer/composer
     volumes:
       - ./api:/app
-    command: 'install'
+    command:
+      - '-o'
+      - 'install'
     environment:
       # All of the paramaters need to exist.
       SYMFONY__SECRET: ''
@@ -53,3 +56,10 @@ services:
       SYMFONY__DATABASE__NAME: ''
       SYMFONY__DATABASE__USER: ''
       SYMFONY__DATABASE__PASSWORD: ''
+
+  # To run PHP profiles, add the following to your override.
+  # blackfire:
+    # image: blackfire/blackfire
+    # environment:
+        # BLACKFIRE_SERVER_ID: ''
+        # BLACKFIRE_SERVER_TOKEN: ''
