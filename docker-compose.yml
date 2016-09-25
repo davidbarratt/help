@@ -9,13 +9,10 @@ services:
     ports:
       - "8000:80"
   api:
-    # @TODO Use a custom image that includes Intl & APC.
-    image: php:7-fpm
+    build: './services/php'
     volumes:
       - ./api:/var/www/html
       - ./config/php:/usr/local/etc/php/conf.d
-    depends_on:
-      - composer
   composer:
     image: composer/composer
     volumes:
