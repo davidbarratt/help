@@ -21,7 +21,6 @@ services:
       # Override this on production.
       MYSQL_USER: 'user'
       MYSQL_PASSWORD: 'password'
-
   api:
     build: './services/php'
     volumes:
