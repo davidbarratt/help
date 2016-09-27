@@ -23,11 +23,9 @@
         "doctrine/doctrine-cache-bundle": "^1.2",
         "sensio/distribution-bundle": "^5.0",
         "sensio/framework-extra-bundle": "^3.0.2",
-        "symfony/debug-bundle": "^3.1",
         "symfony/form": "^3.1",
         "symfony/monolog-bundle": "^2.8",
         "symfony/polyfill-apcu": "^1.0",
-        "symfony/security-bundle": "^3.1",
         "symfony/validator": "^3.1",
         "symfony/serializer": "^3.1",
         "symfony/property-access": "^3.1"
