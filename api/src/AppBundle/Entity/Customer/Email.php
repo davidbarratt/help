@@ -4,6 +4,7 @@ namespace AppBundle\Entity\Customer;
 
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
  * Email
@@ -20,6 +21,7 @@ class Email
      * @ORM\Id
      * @ORM\Column(name="email", type="string", length=63)
      * @Assert\Email()
+     * @Groups({"api"})
      */
     private $email;
 

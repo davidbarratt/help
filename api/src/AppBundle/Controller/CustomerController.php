@@ -2,35 +2,48 @@
 
 namespace AppBundle\Controller;
 
+use Symfony\Bridge\Doctrine\RegistryInterface;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\HttpFoundation\Response;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
-use AppBundle\Entity\Customer;
+use Symfony\Component\Serializer\SerializerInterface;
+use AppBundle\Entity\Customer\Customer;
 use AppBundle\Form\CustomerType;
 
 /**
  * Customer controller.
  *
- * @Route("/api/customer")
+ * @Route("/api/customer", service="app.customer_controller")
  */
 class CustomerController extends Controller
 {
+
+    /**
+     * @var RegistryInterface
+     */
+    protected $doctrine;
+
+    /**
+     * Create Customer Controller.
+     */
+    public function __construct(SerializerInterface $serializer, RegistryInterface $doctrine)
+    {
+        parent::__construct($serializer);
+        $this->doctrine = $doctrine;
+    }
     /**
      * Lists all Customer entities.
      *
      * @Route("/", name="api_customer_index")
      * @Method("GET")
      */
-    public function indexAction()
+    public function indexAction(Request $request) : Response
     {
-        $em = $this->getDoctrine()->getManager();
+        $em = $this->doctrine->getManager();
+        $customers = $em->getRepository('AppBundle:Customer\Customer')->findAll();
 
-        $customers = $em->getRepository('AppBundle:Customer')->findAll();
-
-        return $this->render('customer/index.html.twig', array(
-            'customers' => $customers,
-        ));
+        return $this->reply($customers, $request->getRequestFormat('json'));
     }
 
     /**
@@ -65,14 +78,9 @@ class CustomerController extends Controller
      * @Route("/{id}", name="api_customer_show")
      * @Method("GET")
      */
-    public function showAction(Customer $customer)
+    public function showAction(Customer $customer, Request $request) : Response
     {
-        $deleteForm = $this->createDeleteForm($customer);
-
-        return $this->render('customer/show.html.twig', array(
-            'customer' => $customer,
-            'delete_form' => $deleteForm->createView(),
-        ));
+        return $this->reply($customer, $request->getRequestFormat('json'));
     }
 
     /**

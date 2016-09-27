@@ -4,6 +4,7 @@ namespace AppBundle\Entity\Customer;
 
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\Collection;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
  * Customer
@@ -19,6 +20,7 @@ class Customer
      * @ORM\Column(name="customer_id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
+     * @Groups({"api"})
      */
     private $id;
 
@@ -26,6 +28,7 @@ class Customer
      * @var string
      *
      * @ORM\Column(name="first_name", type="string", length=127)
+     * @Groups({"api"})
      */
     private $firstName;
 
@@ -33,12 +36,14 @@ class Customer
      * @var string
      *
      * @ORM\Column(name="last_name", type="string", length=127)
+     * @Groups({"api"})
      */
     private $lastName;
 
     /**
      * @ORM\OneToMany(targetEntity="Email", mappedBy="customer",  cascade={"all"})
      * @ORM\JoinColumn(name="customer_id", referencedColumnName="customer_id")
+     * @Groups({"api"})
      */
     private $emails;
 
