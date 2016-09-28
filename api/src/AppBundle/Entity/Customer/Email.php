@@ -5,14 +5,12 @@ namespace AppBundle\Entity\Customer;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Serializer\Annotation\Groups;
-use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 /**
  * Email
  *
  * @ORM\Table(name="customer_email")
  * @ORM\Entity()
- * @UniqueEntity("email")
  */
 class Email
 {
@@ -38,9 +36,9 @@ class Email
     /**
      * Get email
      *
-     * @return string|null
+     * @return string
      */
-    public function getEmail()
+    public function getEmail() : string
     {
         return $this->email;
     }

@@ -73,6 +73,7 @@ class CustomerController extends Controller
      */
     public function newAction(Request $request) : Response
     {
+        // @TODO use the validator component rather than the form component.
         $form = $this->formFactory->create(CustomerType::class);
         $form->handleRequest($request);
 
@@ -85,9 +86,13 @@ class CustomerController extends Controller
             return $this->reply($customer, $request->getRequestFormat(), 201);
         }
 
+        $errors = [];
+        foreach ($form->getErrors() as $error) {
+            $errors[] = $error->getMessage();
+        }
 
         $message = [
-          'error' => (string) $form->getErrors(),
+          'error' => $errors,
         ];
         return $this->reply($message, $request->getRequestFormat(), 400);
     }

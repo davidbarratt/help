@@ -4,7 +4,6 @@ namespace AppBundle\Entity\Customer;
 
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\Collection;
-use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
@@ -30,7 +29,6 @@ class Customer
      *
      * @ORM\Column(name="first_name", type="string", length=127)
      * @Groups({"api"})
-     * @Assert\NotBlank()
      */
     private $firstName;
 
@@ -39,7 +37,6 @@ class Customer
      *
      * @ORM\Column(name="last_name", type="string", length=127)
      * @Groups({"api"})
-     * @Assert\NotBlank()
      */
     private $lastName;
 
@@ -53,9 +50,9 @@ class Customer
     /**
      * Get id
      *
-     * @return int|null
+     * @return int
      */
-    public function getId()
+    public function getId() : int
     {
         return $this->id;
     }
@@ -77,9 +74,9 @@ class Customer
     /**
      * Get firstName
      *
-     * @return string|null
+     * @return string
      */
-    public function getFirstName()
+    public function getFirstName() : string
     {
         return $this->firstName;
     }
@@ -101,9 +98,9 @@ class Customer
     /**
      * Get lastName
      *
-     * @return string|null
+     * @return string
      */
-    public function getLastName()
+    public function getLastName() : string
     {
         return $this->lastName;
     }
@@ -137,9 +134,9 @@ class Customer
     /**
      * Get emails
      *
-     * @return Doctrine\Common\Collections\Collection|null
+     * @return Doctrine\Common\Collections\Collection
      */
-    public function getEmails()
+    public function getEmails() : Collection
     {
         return $this->emails;
     }
