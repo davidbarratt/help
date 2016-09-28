@@ -9,6 +9,7 @@ services:
     arguments:
       - '@serializer'
       - '@doctrine'
+      - '@form.factory'
   app.exception_controller:
     class: AppBundle\Controller\ExceptionController
     arguments:

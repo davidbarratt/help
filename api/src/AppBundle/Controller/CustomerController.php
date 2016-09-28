@@ -8,6 +8,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\Serializer\SerializerInterface;
+use Symfony\Component\Form\FormFactoryInterface;
 use AppBundle\Entity\Customer\Customer;
 use AppBundle\Form\CustomerType;
 
@@ -24,13 +25,23 @@ class CustomerController extends Controller
      */
     protected $doctrine;
 
+
+    /**
+     * @var FormFactoryInterface
+     */
+    protected $formFactory;
+
     /**
      * Create Customer Controller.
      */
-    public function __construct(SerializerInterface $serializer, RegistryInterface $doctrine)
-    {
+    public function __construct(
+        SerializerInterface $serializer,
+        RegistryInterface $doctrine,
+        FormFactoryInterface $formFactory
+    ) {
         parent::__construct($serializer);
         $this->doctrine = $doctrine;
+        $this->formFactory = $formFactory;
     }
     /**
      * Lists all Customer entities.
@@ -54,30 +65,31 @@ class CustomerController extends Controller
      * Creates a new Customer entity.
      *
      * @Route(
-     *    "/",
+     *    "/{_format}",
      *    defaults={"_format": "json"},
      *    name="api_customer_new"
      * )
-     * @Method({"POST"})
+     * @Method("POST")
      */
-    public function newAction(Request $request)
+    public function newAction(Request $request) : Response
     {
-        $customer = new Customer();
-        $form = $this->createForm('AppBundle\Form\CustomerType', $customer);
+        $form = $this->formFactory->create(CustomerType::class);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $em = $this->getDoctrine()->getManager();
+            $customer = $form->getData();
+            $em = $this->doctrine->getManager();
             $em->persist($customer);
             $em->flush();
 
-            return $this->redirectToRoute('api_customer_show', array('id' => $customer->getId()));
+            return $this->reply($customer, $request->getRequestFormat(), 201);
         }
 
-        return $this->render('customer/new.html.twig', array(
-            'customer' => $customer,
-            'form' => $form->createView(),
-        ));
+
+        $message = [
+          'error' => (string) $form->getErrors(),
+        ];
+        return $this->reply($message, $request->getRequestFormat(), 400);
     }
 
     /**
@@ -90,7 +102,7 @@ class CustomerController extends Controller
      * )
      * @Method("GET")
      */
-    public function showAction(Customer $customer, Request $request) : Response
+    public function showAction(Request $request, Customer $customer) : Response
     {
         return $this->reply($customer, $request->getRequestFormat());
     }
@@ -103,9 +115,9 @@ class CustomerController extends Controller
      *    defaults={"_format": "json"},
      *    name="api_customer_edit"
      * )
-     * @Method({"PATCH"})
+     * @Method("PATCH")
      */
-    public function editAction(Request $request, Customer $customer)
+    public function editAction(Customer $customer, Request $request) : Response
     {
         $deleteForm = $this->createDeleteForm($customer);
         $editForm = $this->createForm('AppBundle\Form\CustomerType', $customer);
@@ -136,32 +148,27 @@ class CustomerController extends Controller
      * )
      * @Method("DELETE")
      */
-    public function deleteAction(Request $request, Customer $customer)
+    public function deleteAction(Customer $customer, Request $request) : Response
     {
-        $form = $this->createDeleteForm($customer);
-        $form->handleRequest($request);
+        $em = $this->doctrine->getManager();
+        $em->remove($customer);
+        $em->flush();
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $em = $this->getDoctrine()->getManager();
-            $em->remove($customer);
-            $em->flush();
-        }
-
-        return $this->redirectToRoute('api_customer_index');
+        return $this->reply('', $request->getRequestFormat(), 204);
     }
 
     /**
-     * Creates a form to delete a Customer entity.
+     * Displays a form to edit an existing Customer entity.
      *
-     * @param Customer $customer The Customer entity
-     *
-     * @return \Symfony\Component\Form\Form The form
+     * @Route(
+     *    "/duplicates.{_format}",
+     *    defaults={"_format": "json"},
+     *    name="api_customer_duplicates"
+     * )
+     * @Method({"GET"})
      */
-    private function createDeleteForm(Customer $customer)
+    private function duplicateAction(Request $request) : Response
     {
-        return $this->createFormBuilder()
-            ->setAction($this->generateUrl('api_customer_delete', array('id' => $customer->getId())))
-            ->setMethod('DELETE')
-            ->getForm();
+        return  $this->reply('', $request->getRequestFormat());
     }
 }
