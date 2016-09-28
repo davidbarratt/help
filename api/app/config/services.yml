@@ -9,3 +9,12 @@ services:
     arguments:
       - '@serializer'
       - '@doctrine'
+  app.exception_controller:
+    class: AppBundle\Controller\ExceptionController
+    arguments:
+      - '@serializer'
+      - '@kernel'
+    tags:
+      -
+        name: kernel.event_listener
+        event: kernel.exception

@@ -35,7 +35,11 @@ class CustomerController extends Controller
     /**
      * Lists all Customer entities.
      *
-     * @Route("/", name="api_customer_index")
+     * @Route(
+     *    "/{_format}",
+     *    defaults={"_format": "json"},
+     *    name="api_customer_index"
+     * )
      * @Method("GET")
      */
     public function indexAction(Request $request) : Response
@@ -43,14 +47,18 @@ class CustomerController extends Controller
         $em = $this->doctrine->getManager();
         $customers = $em->getRepository('AppBundle:Customer\Customer')->findAll();
 
-        return $this->reply($customers, $request->getRequestFormat('json'));
+        return $this->reply($customers, $request->getRequestFormat());
     }
 
     /**
      * Creates a new Customer entity.
      *
-     * @Route("/new", name="api_customer_new")
-     * @Method({"GET", "POST"})
+     * @Route(
+     *    "/",
+     *    defaults={"_format": "json"},
+     *    name="api_customer_new"
+     * )
+     * @Method({"POST"})
      */
     public function newAction(Request $request)
     {
@@ -75,19 +83,27 @@ class CustomerController extends Controller
     /**
      * Finds and displays a Customer entity.
      *
-     * @Route("/{id}", name="api_customer_show")
+     * @Route(
+     *    "/{id}.{_format}",
+     *    defaults={"_format": "json"},
+     *    name="api_customer_show"
+     * )
      * @Method("GET")
      */
     public function showAction(Customer $customer, Request $request) : Response
     {
-        return $this->reply($customer, $request->getRequestFormat('json'));
+        return $this->reply($customer, $request->getRequestFormat());
     }
 
     /**
      * Displays a form to edit an existing Customer entity.
      *
-     * @Route("/{id}/edit", name="api_customer_edit")
-     * @Method({"GET", "POST"})
+     * @Route(
+     *    "/{id}.{_format}",
+     *    defaults={"_format": "json"},
+     *    name="api_customer_edit"
+     * )
+     * @Method({"PATCH"})
      */
     public function editAction(Request $request, Customer $customer)
     {
@@ -113,7 +129,11 @@ class CustomerController extends Controller
     /**
      * Deletes a Customer entity.
      *
-     * @Route("/{id}", name="api_customer_delete")
+     * @Route(
+     *    "/{id}.{_format}",
+     *    defaults={"_format": "json"},
+     *    name="api_customer_delete"
+     * )
      * @Method("DELETE")
      */
     public function deleteAction(Request $request, Customer $customer)
