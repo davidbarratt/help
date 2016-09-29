@@ -3,14 +3,16 @@
 namespace AppBundle\Entity\Customer;
 
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * Email
  *
  * @ORM\Table(name="customer_email")
  * @ORM\Entity()
+ * @UniqueEntity("email")
  */
 class Email
 {
@@ -36,9 +38,9 @@ class Email
     /**
      * Get email
      *
-     * @return string
+     * @return string|null
      */
-    public function getEmail() : string
+    public function getEmail()
     {
         return $this->email;
     }
@@ -60,9 +62,9 @@ class Email
     /**
      * Get Customer.
      *
-     * @return Customer
+     * @return Customer|null
      */
-    public function getCustomer() : Customer
+    public function getCustomer()
     {
         return $this->customer;
     }

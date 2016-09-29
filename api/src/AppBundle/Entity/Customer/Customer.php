@@ -4,7 +4,9 @@ namespace AppBundle\Entity\Customer;
 
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * Customer
@@ -29,6 +31,7 @@ class Customer
      *
      * @ORM\Column(name="first_name", type="string", length=127)
      * @Groups({"api"})
+     * @Assert\NotBlank()
      */
     private $firstName;
 
@@ -37,22 +40,32 @@ class Customer
      *
      * @ORM\Column(name="last_name", type="string", length=127)
      * @Groups({"api"})
+     * @Assert\NotBlank()
      */
     private $lastName;
 
     /**
-     * @ORM\OneToMany(targetEntity="Email", mappedBy="customer",  cascade={"all"})
+     * @ORM\OneToMany(targetEntity="Email", mappedBy="customer",  cascade={"persist", "refresh"})
      * @ORM\JoinColumn(name="customer_id", referencedColumnName="customer_id")
      * @Groups({"api"})
+     * @Assert\Valid
      */
     private $emails;
 
     /**
+     * Create Customer Entity.
+     */
+    public function __construct()
+    {
+        $this->emails = new ArrayCollection();
+    }
+
+    /**
      * Get id
      *
-     * @return int
+     * @return int|null
      */
-    public function getId() : int
+    public function getId()
     {
         return $this->id;
     }
@@ -74,9 +87,9 @@ class Customer
     /**
      * Get firstName
      *
-     * @return string
+     * @return string|null
      */
-    public function getFirstName() : string
+    public function getFirstName()
     {
         return $this->firstName;
     }
@@ -98,9 +111,9 @@ class Customer
     /**
      * Get lastName
      *
-     * @return string
+     * @return string|null
      */
-    public function getLastName() : string
+    public function getLastName()
     {
         return $this->lastName;
     }
@@ -114,6 +127,7 @@ class Customer
      */
     public function addEmail(Email $email) : self
     {
+        $email->setCustomer($this);
         $this->emails[] = $email;
 
         return $this;

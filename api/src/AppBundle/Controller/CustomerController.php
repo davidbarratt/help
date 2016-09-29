@@ -8,14 +8,14 @@ use Symfony\Component\HttpFoundation\Response;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\Serializer\SerializerInterface;
-use Symfony\Component\Form\FormFactoryInterface;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 use AppBundle\Entity\Customer\Customer;
 use AppBundle\Form\CustomerType;
 
 /**
  * Customer controller.
  *
- * @Route("/api/customer", service="app.customer_controller")
+ * @Route("/api", service="app.customer_controller")
  */
 class CustomerController extends Controller
 {
@@ -27,9 +27,9 @@ class CustomerController extends Controller
 
 
     /**
-     * @var FormFactoryInterface
+     * @var ValidatorInterface
      */
-    protected $formFactory;
+    protected $validator;
 
     /**
      * Create Customer Controller.
@@ -37,17 +37,55 @@ class CustomerController extends Controller
     public function __construct(
         SerializerInterface $serializer,
         RegistryInterface $doctrine,
-        FormFactoryInterface $formFactory
+        ValidatorInterface $validator
     ) {
         parent::__construct($serializer);
         $this->doctrine = $doctrine;
-        $this->formFactory = $formFactory;
+        $this->validator = $validator;
     }
+
+    /**
+     * Creates a new Customer entity.
+     *
+     * @Route(
+     *    "/customer.{_format}",
+     *    defaults={"_format": "json"},
+     *    name="api_customer_new"
+     * )
+     * @Method("POST")
+     */
+    public function newAction(Request $request) : Response
+    {
+        $customer = $this->serializer->deserialize(
+            $request->getContent(),
+            Customer::class,
+            $request->getRequestFormat()
+        );
+        $errors = $this->validator->validate($customer);
+
+        // Validation Errors.
+        // @TODO Abstract this?
+        if (count($errors)) {
+            $message['error'] = [];
+            foreach ($errors as $error) {
+                $message['error'][$error->getPropertyPath()][] = $error->getMessage();
+            }
+            return $this->reply($message, $request->getRequestFormat(), 400);
+        }
+
+        $em = $this->doctrine->getManager();
+        $em->persist($customer);
+        $em->flush();
+
+        return $this->reply($customer, $request->getRequestFormat(), 201);
+    }
+
+
     /**
      * Lists all Customer entities.
      *
      * @Route(
-     *    "/{_format}",
+     *    "/customer.{_format}",
      *    defaults={"_format": "json"},
      *    name="api_customer_index"
      * )
@@ -62,48 +100,13 @@ class CustomerController extends Controller
     }
 
     /**
-     * Creates a new Customer entity.
-     *
-     * @Route(
-     *    "/{_format}",
-     *    defaults={"_format": "json"},
-     *    name="api_customer_new"
-     * )
-     * @Method("POST")
-     */
-    public function newAction(Request $request) : Response
-    {
-        // @TODO use the validator component rather than the form component.
-        $form = $this->formFactory->create(CustomerType::class);
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $customer = $form->getData();
-            $em = $this->doctrine->getManager();
-            $em->persist($customer);
-            $em->flush();
-
-            return $this->reply($customer, $request->getRequestFormat(), 201);
-        }
-
-        $errors = [];
-        foreach ($form->getErrors() as $error) {
-            $errors[] = $error->getMessage();
-        }
-
-        $message = [
-          'error' => $errors,
-        ];
-        return $this->reply($message, $request->getRequestFormat(), 400);
-    }
-
-    /**
      * Finds and displays a Customer entity.
      *
      * @Route(
-     *    "/{id}.{_format}",
+     *    "/customer/{id}.{_format}",
      *    defaults={"_format": "json"},
-     *    name="api_customer_show"
+     *    name="api_customer_show",
+     *    requirements={"id": "\d+"}
      * )
      * @Method("GET")
      */
@@ -116,14 +119,16 @@ class CustomerController extends Controller
      * Displays a form to edit an existing Customer entity.
      *
      * @Route(
-     *    "/{id}.{_format}",
+     *    "/customer/{id}.{_format}",
      *    defaults={"_format": "json"},
-     *    name="api_customer_edit"
+     *    name="api_customer_edit",
+     *    requirements={"id": "\d+"}
      * )
      * @Method("PATCH")
      */
     public function editAction(Customer $customer, Request $request) : Response
     {
+        // @TODO Update this!
         $deleteForm = $this->createDeleteForm($customer);
         $editForm = $this->createForm('AppBundle\Form\CustomerType', $customer);
         $editForm->handleRequest($request);
@@ -147,9 +152,10 @@ class CustomerController extends Controller
      * Deletes a Customer entity.
      *
      * @Route(
-     *    "/{id}.{_format}",
+     *    "/customer/{id}.{_format}",
      *    defaults={"_format": "json"},
-     *    name="api_customer_delete"
+     *    name="api_customer_delete",
+     *    requirements={"id": "\d+"}
      * )
      * @Method("DELETE")
      */
@@ -166,7 +172,7 @@ class CustomerController extends Controller
      * Displays a form to edit an existing Customer entity.
      *
      * @Route(
-     *    "/duplicates.{_format}",
+     *    "/customer/duplicates.{_format}",
      *    defaults={"_format": "json"},
      *    name="api_customer_duplicates"
      * )

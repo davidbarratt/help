@@ -9,7 +9,7 @@ services:
     arguments:
       - '@serializer'
       - '@doctrine'
-      - '@form.factory'
+      - '@validator'
   app.exception_controller:
     class: AppBundle\Controller\ExceptionController
     arguments:
@@ -19,3 +19,8 @@ services:
       -
         name: kernel.event_listener
         event: kernel.exception
+  app.customer_normalizer:
+        class: AppBundle\Normalizer\CustomerNormalizer
+        public: false
+        tags:
+            - { name: serializer.normalizer }
