@@ -114,7 +114,7 @@ class CustomerController extends Controller
     }
 
     /**
-     * Displays a form to edit an existing Customer entity.
+     * Updates a Customer entity.
      *
      * @Route(
      *    "/customer/{id}.{_format}",
@@ -193,7 +193,12 @@ class CustomerController extends Controller
     }
 
     /**
-     * Displays a form to edit an existing Customer entity.
+     * Retrieves a list of duplicate customers.
+     *
+     * @TODO Improve this algorithm. Right now we are determining duplicates
+     *       by the last name matching, which will produce a lot of false
+     *       positives in larger data sets. We should use additional fields
+     *       and weights to determine if something is duplicate.
      *
      * @Route(
      *    "/customer/duplicates.{_format}",
@@ -202,8 +207,20 @@ class CustomerController extends Controller
      * )
      * @Method({"GET"})
      */
-    private function duplicateAction(Request $request) : Response
+    public function duplicateAction(Request $request) : Response
     {
-        return  $this->reply('', $request->getRequestFormat());
+        $em = $this->doctrine->getManager();
+        $query = $em->createQueryBuilder()
+            ->select('c')
+            ->from('AppBundle:Customer\Customer ', 'c')
+            ->from('AppBundle:Customer\Customer ', 'c2')
+            ->where('c.id != c2.id AND c.lastName = c2.lastName')
+            ->orderBy('c.lastName', 'ASC')
+            ->orderBy('c.firstName', 'ASC')
+            ->getQuery();
+
+        $customers = $query->getResult();
+
+        return  $this->reply($customers, $request->getRequestFormat());
     }
 }
