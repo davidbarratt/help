@@ -4,6 +4,7 @@ namespace AppBundle\Controller;
 
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Serializer\SerializerInterface;
+use Symfony\Component\Validator\ConstraintViolationListInterface;
 
 /**
  * Abstract Controller.
@@ -29,6 +30,15 @@ abstract class Controller
      */
     public function reply($data, string $format, int $status = 200) : Response
     {
+        if ($data instanceof ConstraintViolationListInterface) {
+            $errors = $data;
+            $data = [
+                'error' => [],
+            ];
+            foreach ($errors as $error) {
+                $data['error'][$error->getPropertyPath()][] = $error->getMessage();
+            }
+        }
         return new Response($this->serializer->serialize($data, $format, [
           'groups' => [
             'api'

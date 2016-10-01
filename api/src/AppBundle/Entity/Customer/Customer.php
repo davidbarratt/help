@@ -45,10 +45,18 @@ class Customer
     private $lastName;
 
     /**
-     * @ORM\OneToMany(targetEntity="Email", mappedBy="customer",  cascade={"persist", "refresh"})
+     * @ORM\OneToMany(
+     *    targetEntity="Email",
+     *    mappedBy="customer",
+     *    cascade={"all"},
+     *    orphanRemoval=true
+     * )
      * @ORM\JoinColumn(name="customer_id", referencedColumnName="customer_id")
      * @Groups({"api"})
      * @Assert\Valid
+     * @Assert\Count(
+     *      min = "1"
+     * )
      */
     private $emails;
 
@@ -58,6 +66,20 @@ class Customer
     public function __construct()
     {
         $this->emails = new ArrayCollection();
+    }
+
+    /**
+     * Set id
+     *
+     * @param int $id
+     *
+     * @return Customer
+     */
+    public function setId(int $id) : self
+    {
+        $this->id = $id;
+
+        return $this;
     }
 
     /**
@@ -153,5 +175,17 @@ class Customer
     public function getEmails() : Collection
     {
         return $this->emails;
+    }
+
+    /**
+     * Clear emails
+     *
+     * @return Customer
+     */
+    public function clearEmails() : self
+    {
+        $this->emails = new ArrayCollection();
+
+        return $this;
     }
 }

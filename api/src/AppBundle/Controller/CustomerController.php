@@ -45,43 +45,6 @@ class CustomerController extends Controller
     }
 
     /**
-     * Creates a new Customer entity.
-     *
-     * @Route(
-     *    "/customer.{_format}",
-     *    defaults={"_format": "json"},
-     *    name="api_customer_new"
-     * )
-     * @Method("POST")
-     */
-    public function newAction(Request $request) : Response
-    {
-        $customer = $this->serializer->deserialize(
-            $request->getContent(),
-            Customer::class,
-            $request->getRequestFormat()
-        );
-        $errors = $this->validator->validate($customer);
-
-        // Validation Errors.
-        // @TODO Abstract this?
-        if (count($errors)) {
-            $message['error'] = [];
-            foreach ($errors as $error) {
-                $message['error'][$error->getPropertyPath()][] = $error->getMessage();
-            }
-            return $this->reply($message, $request->getRequestFormat(), 400);
-        }
-
-        $em = $this->doctrine->getManager();
-        $em->persist($customer);
-        $em->flush();
-
-        return $this->reply($customer, $request->getRequestFormat(), 201);
-    }
-
-
-    /**
      * Lists all Customer entities.
      *
      * @Route(
@@ -94,7 +57,11 @@ class CustomerController extends Controller
     public function indexAction(Request $request) : Response
     {
         $em = $this->doctrine->getManager();
-        $customers = $em->getRepository('AppBundle:Customer\Customer')->findAll();
+        $order = [
+          'lastName' => 'ASC',
+          'firstName' => 'ASC',
+        ];
+        $customers = $em->getRepository('AppBundle:Customer\Customer')->findBy([], $order);
 
         return $this->reply($customers, $request->getRequestFormat());
     }
@@ -116,6 +83,37 @@ class CustomerController extends Controller
     }
 
     /**
+     * Creates a new Customer entity.
+     *
+     * @Route(
+     *    "/customer.{_format}",
+     *    defaults={"_format": "json"},
+     *    name="api_customer_new"
+     * )
+     * @Method("POST")
+     */
+    public function newAction(Request $request) : Response
+    {
+        $customer = $this->serializer->deserialize(
+            $request->getContent(),
+            Customer::class,
+            $request->getRequestFormat()
+        );
+        $errors = $this->validator->validate($customer);
+
+        // Validation Errors.
+        if (count($errors)) {
+            return $this->reply($errors, $request->getRequestFormat(), 400);
+        }
+
+        $em = $this->doctrine->getManager();
+        $em->persist($customer);
+        $em->flush();
+
+        return $this->reply($customer, $request->getRequestFormat(), 201);
+    }
+
+    /**
      * Displays a form to edit an existing Customer entity.
      *
      * @Route(
@@ -124,28 +122,54 @@ class CustomerController extends Controller
      *    name="api_customer_edit",
      *    requirements={"id": "\d+"}
      * )
-     * @Method("PATCH")
+     * @Method({"PUT", "PATCH"})
      */
-    public function editAction(Customer $customer, Request $request) : Response
+    public function editAction(Customer $original, Request $request) : Response
     {
-        // @TODO Update this!
-        $deleteForm = $this->createDeleteForm($customer);
-        $editForm = $this->createForm('AppBundle\Form\CustomerType', $customer);
-        $editForm->handleRequest($request);
+        $context = [];
 
-        if ($editForm->isSubmitted() && $editForm->isValid()) {
-            $em = $this->getDoctrine()->getManager();
-            $em->persist($customer);
-            $em->flush();
-
-            return $this->redirectToRoute('api_customer_edit', array('id' => $customer->getId()));
+        // If this is a PATCH request, use the existing object.
+        if ($request->getMethod() === 'PATCH') {
+            $context = [
+                'object_to_populate' => $original,
+            ];
         }
 
-        return $this->render('customer/edit.html.twig', array(
-            'customer' => $customer,
-            'edit_form' => $editForm->createView(),
-            'delete_form' => $deleteForm->createView(),
-        ));
+        $customer = $this->serializer->deserialize(
+            $request->getContent(),
+            Customer::class,
+            $request->getRequestFormat(),
+            $context
+        );
+
+        $em = $this->doctrine->getManager();
+
+        // Merge operation does not cascade if parent is already merged.
+        // To force the merge to cascade, detach the parent.
+        $em->detach($customer);
+
+        // Merge before validation to prevent unique constraints from firing.
+        $customer = $em->merge($customer);
+
+
+        $errors = $this->validator->validate($customer);
+
+        // Validation Errors.
+        if (count($errors)) {
+            return $this->reply($errors, $request->getRequestFormat(), 400);
+        }
+
+        if ($original->getId() !== $customer->getId()) {
+            $message = [
+              'error' => 'Resource ID does not match ID in body'
+            ];
+            return $this->reply($message, $request->getRequestFormat(), 400);
+        }
+
+        $em = $this->doctrine->getManager();
+        $em->flush();
+
+        return $this->reply($customer, $request->getRequestFormat(), 200);
     }
 
     /**

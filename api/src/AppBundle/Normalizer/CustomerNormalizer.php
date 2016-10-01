@@ -20,16 +20,27 @@ class CustomerNormalizer implements DenormalizerInterface, SerializerAwareInterf
      */
     public function denormalize($data, $class, $format = null, array $context = array())
     {
-        $object = new $class();
+        if (isset($context['object_to_populate'])) {
+            $object = $context['object_to_populate'];
+        } else {
+            $object = new $class();
+        }
+
+        if (isset($data['id']) && is_int($data['id'])) {
+            $object->setId($data['id']);
+        }
         if (isset($data['firstName']) && is_string($data['firstName'])) {
             $object->setFirstName($data['firstName']);
         }
         if (isset($data['lastName']) && is_string($data['lastName'])) {
             $object->setLastName($data['lastName']);
         }
-        $emails = $data['emails'] ?? [];
-        foreach ($emails as $data) {
-            $object->addEmail($this->serializer->denormalize($data, Email::class));
+
+        if (isset($data['emails']) && is_array($data['emails'])) {
+            $object->clearEmails();
+            foreach ($data['emails'] as $item) {
+                $object->addEmail($this->serializer->denormalize($item, Email::class));
+            }
         }
 
         return $object;
