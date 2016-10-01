@@ -8,9 +8,6 @@ use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 use Symfony\Component\Serializer\SerializerAwareInterface;
 use Symfony\Component\Serializer\SerializerAwareTrait;
 
-/**
- * @author Jordi Boggiano <j.boggiano@seld.be>
- */
 class CustomerNormalizer implements DenormalizerInterface, SerializerAwareInterface
 {
     use SerializerAwareTrait;
