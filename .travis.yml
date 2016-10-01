@@ -2,7 +2,7 @@ language: bash
 services:
   - docker
 before_script:
-  - 'docker-compose -f docker-compose.yml -f docker-compose.travis.yml up -d api'
+  - 'docker-compose -f docker-compose.yml -f docker-compose.travis.yml up -d api phpunit'
   - 'docker-compose run composer install'
 script:
   - 'docker-compose run composer exec -- "phpcs -p --report=summary ."'
