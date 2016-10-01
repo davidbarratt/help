@@ -51,11 +51,6 @@ services:
       SYMFONY__DATABASE__USER: ''
       SYMFONY__DATABASE__PASSWORD: ''
 
-  phpunit:
-    image: phpunit/phpunit
-    volumes:
-      - ./api:/app
-
   # To run PHP profiles, add the following to your override.
   # blackfire:
     # image: blackfire/blackfire
