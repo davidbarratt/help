@@ -2,8 +2,8 @@ language: bash
 services:
   - docker
 before_script:
-  - 'docker-compose -f docker-compose.yml -f docker-compose.travis.yml up -d api phpunit'
-  - 'docker-compose run composer install'
+  - 'docker-compose -f docker-compose.yml -f docker-compose.travis.yml up -d api'
+  - 'docker-compose -f docker-compose.yml -f docker-compose.travis.yml run composer install'
 script:
-  - 'docker-compose run composer exec -- "phpcs -p --report=summary ."'
-  - 'docker-compose run phpunit --testsuite=App'
+  - 'docker-compose -f docker-compose.yml -f docker-compose.travis.yml run composer exec -- "phpcs -p --report=summary ."'
+  - 'docker-compose -f docker-compose.yml -f docker-compose.travis.yml run phpunit --testsuite=App'
