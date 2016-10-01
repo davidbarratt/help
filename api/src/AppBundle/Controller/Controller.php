@@ -13,6 +13,15 @@ abstract class Controller
 {
 
     /**
+     * @var array
+     */
+    const SERIALIZE_CONTEXT = [
+      'groups' => [
+        'api'
+      ],
+    ];
+
+    /**
      * @var SerializerInterface
      */
     protected $serializer;
@@ -39,10 +48,6 @@ abstract class Controller
                 $data['error'][$error->getPropertyPath()][] = $error->getMessage();
             }
         }
-        return new Response($this->serializer->serialize($data, $format, [
-          'groups' => [
-            'api'
-          ],
-        ]), $status);
+        return new Response($this->serializer->serialize($data, $format, self::SERIALIZE_CONTEXT), $status);
     }
 }

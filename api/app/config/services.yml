@@ -8,7 +8,7 @@ services:
     class: AppBundle\Controller\CustomerController
     arguments:
       - '@serializer'
-      - '@doctrine'
+      - '@doctrine.orm.entity_manager'
       - '@validator'
   app.exception_controller:
     class: AppBundle\Controller\ExceptionController

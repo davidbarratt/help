@@ -2,6 +2,9 @@
 
 namespace AppBundle\Controller;
 
+use AppBundle\Entity\Customer\Customer;
+use AppBundle\Form\CustomerType;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Doctrine\RegistryInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -9,8 +12,6 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
-use AppBundle\Entity\Customer\Customer;
-use AppBundle\Form\CustomerType;
 
 /**
  * Customer controller.
@@ -21,9 +22,9 @@ class CustomerController extends Controller
 {
 
     /**
-     * @var RegistryInterface
+     * @var EntityManagerInterface
      */
-    protected $doctrine;
+    protected $entityManager;
 
 
     /**
@@ -36,11 +37,11 @@ class CustomerController extends Controller
      */
     public function __construct(
         SerializerInterface $serializer,
-        RegistryInterface $doctrine,
+        EntityManagerInterface $entityManager,
         ValidatorInterface $validator
     ) {
         parent::__construct($serializer);
-        $this->doctrine = $doctrine;
+        $this->entityManager = $entityManager;
         $this->validator = $validator;
     }
 
@@ -56,12 +57,11 @@ class CustomerController extends Controller
      */
     public function indexAction(Request $request) : Response
     {
-        $em = $this->doctrine->getManager();
         $order = [
           'lastName' => 'ASC',
           'firstName' => 'ASC',
         ];
-        $customers = $em->getRepository('AppBundle:Customer\Customer')->findBy([], $order);
+        $customers = $this->entityManager->getRepository('AppBundle:Customer\Customer')->findBy([], $order);
 
         return $this->reply($customers, $request->getRequestFormat());
     }
@@ -106,9 +106,8 @@ class CustomerController extends Controller
             return $this->reply($errors, $request->getRequestFormat(), 400);
         }
 
-        $em = $this->doctrine->getManager();
-        $em->persist($customer);
-        $em->flush();
+        $this->entityManager->persist($customer);
+        $this->entityManager->flush();
 
         return $this->reply($customer, $request->getRequestFormat(), 201);
     }
@@ -142,14 +141,12 @@ class CustomerController extends Controller
             $context
         );
 
-        $em = $this->doctrine->getManager();
-
         // Merge operation does not cascade if parent is already merged.
         // To force the merge to cascade, detach the parent.
-        $em->detach($customer);
+        $this->entityManager->detach($customer);
 
         // Merge before validation to prevent unique constraints from firing.
-        $customer = $em->merge($customer);
+        $customer = $this->entityManager->merge($customer);
 
 
         $errors = $this->validator->validate($customer);
@@ -166,8 +163,7 @@ class CustomerController extends Controller
             return $this->reply($message, $request->getRequestFormat(), 400);
         }
 
-        $em = $this->doctrine->getManager();
-        $em->flush();
+        $this->entityManager->flush();
 
         return $this->reply($customer, $request->getRequestFormat(), 200);
     }
@@ -185,9 +181,8 @@ class CustomerController extends Controller
      */
     public function deleteAction(Customer $customer, Request $request) : Response
     {
-        $em = $this->doctrine->getManager();
-        $em->remove($customer);
-        $em->flush();
+        $this->entityManager->remove($customer);
+        $this->entityManager->flush();
 
         return $this->reply('', $request->getRequestFormat(), 204);
     }
@@ -209,8 +204,7 @@ class CustomerController extends Controller
      */
     public function duplicateAction(Request $request) : Response
     {
-        $em = $this->doctrine->getManager();
-        $query = $em->createQueryBuilder()
+        $query = $this->entityManager->createQueryBuilder()
             ->select('c')
             ->from('AppBundle:Customer\Customer ', 'c')
             ->from('AppBundle:Customer\Customer ', 'c2')

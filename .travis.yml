@@ -6,4 +6,4 @@ before_script:
   - 'docker-compose run composer install'
 script:
   - 'docker-compose run composer exec -- "phpcs -p --report=summary ."'
-  - 'docker-compose run composer exec -- "phpunit"'
+  - 'docker-compose run phpunit --testsuite=App'
