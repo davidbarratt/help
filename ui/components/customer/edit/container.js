@@ -1,6 +1,6 @@
 import { connect } from 'react-redux';
 import CustomerEdit from './index.js';
-import CustomerActions from '../../../actions/customer.js';
+import CustomerActions from '../../../actions/customer/index.js';
 
 const mapStateToProps = (state, ownProps) => {
   let id = parseInt(ownProps.params.id);

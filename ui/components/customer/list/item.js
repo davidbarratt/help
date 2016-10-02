@@ -25,9 +25,15 @@ class CustomerListItem extends React.Component {
     let customer = this.props.customer;
     let rowClass = '';
 
-    if (customer.state === 'dirty') {
-      rowClass = 'warning';
+    switch (customer.state) {
+      case 'dirty':
+        rowClass = 'warning';
+        break;
+      case 'error':
+        rowClass = 'danger';
+        break;
     }
+
     return (
       <tr className={rowClass}>
         <td>{customer.firstName}</td>
