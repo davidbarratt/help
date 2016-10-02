@@ -51,11 +51,12 @@ class CustomerAction {
   }
 
   removeEmail (customer, index) {
-    let data = {
-      emails: customer.emails
-    };
+    let data = {};
 
-    delete data.emails[index];
+    data.emails = [
+      ...customer.emails.slice(0, index),
+      ...customer.emails.slice(index + 1)
+    ];
 
     return this.updateCustomer(customer, data);
   }
@@ -63,7 +64,7 @@ class CustomerAction {
   saveCustomer (customer) {
     return (dispatch) => {
       return new Promise((resolve, reject) => {
-        this.request.put('/api/customer/' + customer.id, customer)
+        this.request.patch('/api/customer/' + customer.id, customer)
         .then((data) => {
           let updated = this.normalizer.normalize(data);
           dispatch(this.updateCustomer(customer, updated));

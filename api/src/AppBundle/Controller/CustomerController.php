@@ -125,6 +125,9 @@ class CustomerController extends Controller
      */
     public function editAction(Customer $original, Request $request) : Response
     {
+        // Get the emails now so they properly cascade.
+        $original->getEmails()->initialize();
+
         $context = [];
 
         // If this is a PATCH request, use the existing object.
@@ -141,13 +144,16 @@ class CustomerController extends Controller
             $context
         );
 
-        // Merge operation does not cascade if parent is already merged.
-        // To force the merge to cascade, detach the parent.
-        $this->entityManager->detach($customer);
+        // Detach the customer before merging so the cascading works.
+        // $this->entityManager->detach($customer);
 
         // Merge before validation to prevent unique constraints from firing.
         $customer = $this->entityManager->merge($customer);
 
+        // Merge operation does not cascade to emails properly.
+        foreach ($customer->getEmails() as $index => $email) {
+            $customer->getEmails()->set($index, $this->entityManager->merge($email));
+        }
 
         $errors = $this->validator->validate($customer);
 
@@ -156,14 +162,11 @@ class CustomerController extends Controller
             return $this->reply($errors, $request->getRequestFormat(), 400);
         }
 
-        if ($original->getId() !== $customer->getId()) {
-            $message = [
-              'error' => 'Resource ID does not match ID in body'
-            ];
-            return $this->reply($message, $request->getRequestFormat(), 400);
-        }
-
         $this->entityManager->flush();
+
+        // Ensure what we are sending back to the client matches what is in the
+        // database.
+        $this->entityManager->refresh($customer);
 
         return $this->reply($customer, $request->getRequestFormat(), 200);
     }

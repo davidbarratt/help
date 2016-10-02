@@ -176,16 +176,4 @@ class Customer
     {
         return $this->emails;
     }
-
-    /**
-     * Clear emails
-     *
-     * @return Customer
-     */
-    public function clearEmails() : self
-    {
-        $this->emails = new ArrayCollection();
-
-        return $this;
-    }
 }

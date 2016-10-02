@@ -21,10 +21,10 @@ class ClientRequest {
     });
   }
 
-  put (path, data = {}) {
+  patch (path, data = {}) {
     return this.client({
       uri: path,
-      method: 'PUT',
+      method: 'PATCH',
       body: data
     });
   }

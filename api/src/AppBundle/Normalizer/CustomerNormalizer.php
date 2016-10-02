@@ -34,7 +34,19 @@ class CustomerNormalizer implements DenormalizerInterface, SerializerAwareInterf
         }
 
         if (isset($data['emails']) && is_array($data['emails'])) {
-            $object->clearEmails();
+            $emails = [];
+            foreach ($data['emails'] as $key => $email) {
+                $emails[$key] = $email['email'];
+            }
+            foreach ($object->getEmails() as $email) {
+                $key = array_search($email->getEmail(), $emails);
+                if ($key !== false) {
+                    unset($emails[$key]);
+                    unset($data['emails'][$key]);
+                } else {
+                    $object->removeEmail($email);
+                }
+            }
             foreach ($data['emails'] as $item) {
                 $object->addEmail($this->serializer->denormalize($item, Email::class));
             }
