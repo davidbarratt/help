@@ -20,6 +20,14 @@ class ClientRequest {
       qs: params
     });
   }
+
+  put (path, data = {}) {
+    return this.client({
+      uri: path,
+      method: 'PUT',
+      body: data
+    });
+  }
 }
 
 export default ClientRequest;

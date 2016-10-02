@@ -48,7 +48,7 @@ class Entity {
         if (target[prop] instanceof Entity) {
           target[prop] = target[prop].constructor.merge(target[prop], source[prop]);
         // Only update the property if it's different than the base.
-        } else if (base[prop] !== source[prop] && source[prop] !== null) {
+        } else if (target[prop] !== source[prop] && source[prop] !== null) {
           target[prop] = source[prop];
         }
       }

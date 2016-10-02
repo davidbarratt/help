@@ -15,9 +15,17 @@ const mapStateToProps = (state, ownProps) => {
 
 const mapDispatchToProps = (dispatch, ownProps) => {
   return {
-    updateCustomer: (baseUrl, customer, data) => {
-      let actions = new CustomerActions(baseUrl);
+    updateCustomer: (customer, data) => {
+      let actions = new CustomerActions();
       dispatch(actions.updateCustomer(customer, data));
+    },
+    createEmail: (customer) => {
+      let actions = new CustomerActions();
+      dispatch(actions.createEmail(customer));
+    },
+    saveCustomer: (baseUrl, customer) => {
+      let actions = new CustomerActions(baseUrl);
+      dispatch(actions.saveCustomer(customer));
     }
   };
 };

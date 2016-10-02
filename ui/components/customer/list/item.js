@@ -33,9 +33,9 @@ class CustomerListItem extends React.Component {
         <td>{customer.firstName}</td>
         <td>{customer.lastName}</td>
         <td>
-          {customer.emails.map((email) => {
+          {customer.emails.map((email, index) => {
             return (
-              <div key={email.email}>
+              <div key={index}>
                 {email.email}
               </div>
             );
@@ -47,7 +47,7 @@ class CustomerListItem extends React.Component {
               ({isActive, location, href, onClick, transition}) =>
                   <button type="button" className="btn" onClick={onClick}>Edit</button>
               }</Link>
-            <button type="button" className="btn dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" onClick={() => this.toggleDropdown()}>
+            <button type="button" className="btn dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" onClick={this.toggleDropdown.bind(this)}>
               <span className="caret"></span>
               <span className="sr-only">Toggle Dropdown</span>
             </button>
