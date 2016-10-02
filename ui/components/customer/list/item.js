@@ -32,6 +32,9 @@ class CustomerListItem extends React.Component {
       case 'error':
         rowClass = 'danger';
         break;
+      case 'removing':
+        rowClass = 'info';
+        break;
     }
 
     return (

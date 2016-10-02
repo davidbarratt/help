@@ -28,6 +28,13 @@ class ClientRequest {
       body: data
     });
   }
+
+  delete (path) {
+    return this.client({
+      uri: path,
+      method: 'DELETE'
+    });
+  }
 }
 
 export default ClientRequest;

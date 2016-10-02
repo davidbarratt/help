@@ -4,7 +4,7 @@ import Link from 'react-router/Link';
 import CustomerListContainer from './customer/list/container.js';
 import CustomerDuplicates from './customer/duplicates.js';
 import CustomerEditContainer from './customer/edit/container.js';
-import CustomerDelete from './customer/delete.js';
+import CustomerDeleteContainer from './customer/delete/container.js';
 
 const App = () => (
   <div>
@@ -31,7 +31,7 @@ const App = () => (
       <Match exactly pattern="/" component={CustomerListContainer} />
       <Match exactly pattern="/customer/duplicates" component={CustomerDuplicates} />
       <Match pattern="/customer/:id/edit" component={CustomerEditContainer} />
-      <Match pattern="/customer/:id/delete" component={CustomerDelete} />
+      <Match pattern="/customer/:id/delete" component={CustomerDeleteContainer} />
     </div>
   </div>
 );

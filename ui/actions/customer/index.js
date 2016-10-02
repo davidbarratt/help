@@ -84,6 +84,31 @@ class CustomerAction {
     };
   }
 
+  deleteCustomer (customer) {
+    return (dispatch) => {
+      dispatch(this.updateCustomer(customer, {
+        state: 'removing'
+      }));
+      return this.request.delete('/api/customer/' + customer.id)
+        .then((data) => {
+          let duplicates = new CustomerDuplicatesAction(this.baseUrl);
+          // Getting the list of customers again will remove the current
+          // customer from the list.
+          dispatch(this.getCustomers());
+          dispatch(duplicates.setStatusStale());
+          return data;
+        })
+        .catch((e) => {
+          // Do nothing, but throw a console error.
+          dispatch(this.updateCustomer(customer, {
+            state: 'error'
+          }));
+          console.log(e);
+          return customer;
+        });
+    };
+  }
+
   getCustomers () {
     return (dispatch) => {
       dispatch(this.setStatusRetrieving());
