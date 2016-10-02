@@ -51,6 +51,16 @@ services:
       SYMFONY__DATABASE__USER: ''
       SYMFONY__DATABASE__PASSWORD: ''
 
+  ui:
+    image: node:6.7
+    volumes:
+      - './ui:/usr/src/app'
+      - './static:/usr/src/static'
+    working_dir: /usr/src/app
+    command:
+      - npm
+      - start
+
   # To run PHP profiles, add the following to your override.
   # blackfire:
     # image: blackfire/blackfire
