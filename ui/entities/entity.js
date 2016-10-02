@@ -28,6 +28,8 @@ class Entity {
 
       entity = this.setProperites(entity, objects[i]);
     }
+
+    return entity;
   }
 
   /**

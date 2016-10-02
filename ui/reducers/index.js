@@ -1,8 +1,10 @@
 import { combineReducers } from 'redux';
-import customers from './customers/index.js';
+import baseUrl from './base-url.js';
+import customer from './customer/index.js';
 
 const help = combineReducers({
-  customers
+  baseUrl,
+  customer
 });
 
 export default help;

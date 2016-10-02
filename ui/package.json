@@ -25,13 +25,16 @@
     "babel-preset-react": "^6.16.0",
     "babel-register": "^6.16.3",
     "babelify": "^7.3.0",
+    "browser-request": "^0.3.3",
     "browserify": "^13.1.0",
     "react": "^15.3.2",
     "react-dom": "^15.3.2",
     "react-redux": "^4.4.5",
     "react-router": "^4.0.0-alpha.4",
     "redux": "^3.6.0",
-    "redux-thunk": "^2.1.0"
+    "redux-thunk": "^2.1.0",
+    "request": "^2.75.0",
+    "request-promise": "^4.1.1"
   },
   "devDependencies": {
     "browserify": "^13.1.0",
