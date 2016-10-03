@@ -25,6 +25,9 @@ class CustomerEdit extends React.Component {
   createEmail (event) {
     this.props.createEmail(this.props.customer);
   }
+  componentDidMount () {
+    this.props.initCustomer(this.props.customer);
+  }
   render () {
     let customer = this.props.customer;
 
@@ -39,7 +42,7 @@ class CustomerEdit extends React.Component {
             <input type="text" className="form-control" name="firstName" id="firstName" value={customer.firstName} onChange={this.handleChange.bind(this)} />
         </div>
         <div className="form-group">
-          <label htmlFor="lastName">First Name</label>
+          <label htmlFor="lastName">Last Name</label>
           <input type="text" className="form-control" name="lastName" id="lastName" value={customer.lastName} onChange={this.handleChange.bind(this)} />
         </div>
         <div className="form-group clearfix">
@@ -62,6 +65,7 @@ class CustomerEdit extends React.Component {
 CustomerEdit.propTypes = {
   baseUrl: PropTypes.string.isRequired,
   customer: PropTypes.instanceOf(Customer).isRequired,
+  initCustomer: PropTypes.func.isRequired,
   updateCustomer: PropTypes.func.isRequired,
   createEmail: PropTypes.func.isRequired,
   saveCustomer: PropTypes.func.isRequired

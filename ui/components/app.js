@@ -5,6 +5,7 @@ import CustomerListContainer from './customer/list/container.js';
 import CustomerDuplicates from './customer/duplicates.js';
 import CustomerEditContainer from './customer/edit/container.js';
 import CustomerDeleteContainer from './customer/delete/container.js';
+import CustomerNew from './customer/new.js';
 
 const App = () => (
   <div>
@@ -29,7 +30,8 @@ const App = () => (
 
     <div className="row">
       <Match exactly pattern="/" component={CustomerListContainer} />
-      <Match exactly pattern="/customer/duplicates" component={CustomerDuplicates} />
+      <Match pattern="/customer/duplicates" component={CustomerDuplicates} />
+      <Match pattern="/customer/new" component={CustomerNew} />
       <Match pattern="/customer/:id/edit" component={CustomerEditContainer} />
       <Match pattern="/customer/:id/delete" component={CustomerDeleteContainer} />
     </div>

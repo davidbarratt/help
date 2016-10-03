@@ -21,10 +21,30 @@ class CustomerAction {
   }
 
   updateCustomer (customer, data = {}) {
+    // If we are updating a draft customer, go through that flow.
+    if (typeof data.state !== 'undefined') {
+      if (data.state == 'draft') {
+        return {
+          type: 'CUSTOMER_DRAFT_UPDATE',
+          customer: customer,
+          data: data
+        };
+      }
+    } else {
+      if (customer.state === 'draft') {
+        return {
+          type: 'CUSTOMER_DRAFT_UPDATE',
+          customer: customer,
+          data: data
+        };
+      }
+    }
+
     // If the state is undefined, we'll assume it's dirty.
     if (typeof data.state === 'undefined') {
       data.state = 'dirty';
     }
+
     return {
       type: 'CUSTOMER_UPDATE',
       customer: customer,
@@ -62,6 +82,13 @@ class CustomerAction {
     return this.updateCustomer(customer, data);
   }
 
+  removeCustomer (customer) {
+    return {
+      type: 'CUSTOMER_REMOVE',
+      customer: customer
+    };
+  }
+
   saveCustomer (customer) {
     return (dispatch) => {
       return this.request.patch('/api/customer/' + customer.id, customer)
@@ -72,6 +99,45 @@ class CustomerAction {
           dispatch(this.getCustomers());
           dispatch(duplicates.setStatusStale());
           return updated;
+        })
+        .catch((e) => {
+          // Do nothing, but throw a console error.
+          dispatch(this.updateCustomer(customer, {
+            state: 'error'
+          }));
+          console.log(e);
+          return customer;
+        });
+    };
+  }
+
+  addCustomer (customer) {
+    return {
+      type: 'CUSTOMER_ADD',
+      customer: customer
+    };
+  }
+
+  clearDraftCustomer () {
+    return {
+      type: 'CUSTOMER_DRAFT_CLEAR'
+    };
+  }
+
+  createCustomer (customer) {
+    return (dispatch) => {
+      dispatch(this.addCustomer(customer));
+      dispatch(this.updateCustomer(customer, {
+        state: 'creating'
+      }));
+      return this.request.post('/api/customer', customer)
+        .then((data) => {
+          let created = this.normalizer.normalize(data);
+          let duplicates = new CustomerDuplicatesAction(this.baseUrl);
+          dispatch(this.clearDraftCustomer());
+          dispatch(this.getCustomers());
+          dispatch(duplicates.setStatusStale());
+          return created;
         })
         .catch((e) => {
           // Do nothing, but throw a console error.

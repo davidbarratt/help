@@ -1,22 +1,19 @@
 import { connect } from 'react-redux';
-import CustomerEdit from './index.js';
-import CustomerActions from '../../../actions/customer/index.js';
+import CustomerEdit from './edit/index.js';
+import CustomerActions from '../../actions/customer/index.js';
 
 const mapStateToProps = (state, ownProps) => {
-  let id = parseInt(ownProps.params.id);
-  let customer = state.customer.list.find((customer) => {
-    return customer.id === id;
-  });
   return {
     baseUrl: state.baseUrl,
-    customer: customer
+    customer: state.customer.draft
   };
 };
 
 const mapDispatchToProps = (dispatch, ownProps) => {
   return {
     initCustomer: (customer) => {
-      // Nothing to init.
+      let actions = new CustomerActions();
+      dispatch(actions.removeCustomer(customer));
     },
     updateCustomer: (customer, data) => {
       let actions = new CustomerActions();
@@ -28,11 +25,11 @@ const mapDispatchToProps = (dispatch, ownProps) => {
     },
     saveCustomer: (baseUrl, customer) => {
       let actions = new CustomerActions(baseUrl);
-      dispatch(actions.saveCustomer(customer));
+      dispatch(actions.createCustomer(customer));
     }
   };
 };
 
-const CustomerEditContainer = connect(mapStateToProps, mapDispatchToProps)(CustomerEdit);
+const CustomerNew = connect(mapStateToProps, mapDispatchToProps)(CustomerEdit);
 
-export default CustomerEditContainer;
+export default CustomerNew;

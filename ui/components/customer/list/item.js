@@ -35,6 +35,39 @@ class CustomerListItem extends React.Component {
       case 'removing':
         rowClass = 'info';
         break;
+      case 'creating':
+        rowClass = 'info';
+        break;
+    }
+
+    let operations;
+
+    // New Customers do not have operations.
+    if (customer.id === 0) {
+      operations = (
+        <div className='btn-group'>
+          <Link to={'/customer/new'}>{
+            ({isActive, location, href, onClick, transition}) =>
+                <button type="button" className="btn" onClick={onClick}>Edit</button>
+            }</Link>
+        </div>
+      );
+    } else {
+      operations = (
+        <div className={this.state.operationsMenu ? 'btn-group open' : 'btn-group'}>
+          <Link to={'/customer/' + customer.id + '/edit'}>{
+            ({isActive, location, href, onClick, transition}) =>
+                <button type="button" className="btn" onClick={onClick}>Edit</button>
+            }</Link>
+          <button type="button" className="btn dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" onClick={this.toggleDropdown.bind(this)}>
+            <span className="caret"></span>
+            <span className="sr-only">Toggle Dropdown</span>
+          </button>
+          <ul className="dropdown-menu">
+            <li><Link to={'/customer/' + customer.id + '/delete'}>Delete</Link></li>
+          </ul>
+        </div>
+      );
     }
 
     return (
@@ -51,19 +84,7 @@ class CustomerListItem extends React.Component {
           })}
         </td>
         <td>
-          <div className={this.state.operationsMenu ? 'btn-group open' : 'btn-group'}>
-            <Link to={'/customer/' + customer.id + '/edit'}>{
-              ({isActive, location, href, onClick, transition}) =>
-                  <button type="button" className="btn" onClick={onClick}>Edit</button>
-              }</Link>
-            <button type="button" className="btn dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" onClick={this.toggleDropdown.bind(this)}>
-              <span className="caret"></span>
-              <span className="sr-only">Toggle Dropdown</span>
-            </button>
-            <ul className="dropdown-menu">
-              <li><Link to={'/customer/' + customer.id + '/delete'}>Delete</Link></li>
-            </ul>
-          </div>
+          {operations}
         </td>
       </tr>
     );

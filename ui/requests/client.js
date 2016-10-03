@@ -21,6 +21,14 @@ class ClientRequest {
     });
   }
 
+  post (path, data = {}) {
+    return this.client({
+      uri: path,
+      method: 'POST',
+      body: data
+    });
+  }
+
   patch (path, data = {}) {
     return this.client({
       uri: path,

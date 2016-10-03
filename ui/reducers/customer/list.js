@@ -1,6 +1,8 @@
 import Customer from '../../entities/customer.js';
 
 const list = (state = [], action) => {
+  let index;
+
   switch (action.type) {
     case 'CUSTOMER_UPDATE_ALL':
 
@@ -25,7 +27,7 @@ const list = (state = [], action) => {
         return state;
       }
 
-      let index = state.findIndex((item) => {
+      index = state.findIndex((item) => {
         return item.id === action.customer.id;
       });
 
@@ -38,6 +40,31 @@ const list = (state = [], action) => {
       return [
         ...state.slice(0, index),
         Customer.merge(action.customer, action.data),
+        ...state.slice(index + 1)
+      ];
+
+    case 'CUSTOMER_ADD':
+      if (action.customer instanceof Customer === false) {
+        return state;
+      }
+
+      return state.concat(action.customer);
+
+    case 'CUSTOMER_REMOVE':
+      if (action.customer instanceof Customer === false) {
+        return state;
+      }
+
+      index = state.findIndex((item) => {
+        return item.id === action.customer.id;
+      });
+
+      if (index === -1) {
+        return state;
+      }
+
+      return [
+        ...state.slice(0, index),
         ...state.slice(index + 1)
       ];
 
