@@ -6,8 +6,25 @@ import { createStore, applyMiddleware } from 'redux';
 import thunk from 'redux-thunk';
 import App from './components/app.js';
 import help from './reducers/index.js';
+import CustomerNormalizer from './normalizers/customer.js';
 
-let store = createStore(help, undefined, applyMiddleware(thunk));
+let initialState;
+
+let element = document.getElementById('state');
+if (element) {
+  try {
+    initialState = JSON.parse(element.innerText);
+    let normalizer = new CustomerNormalizer();
+    initialState.customer.list = initialState.customer.list.map((item) => {
+      return normalizer.normalize(item);
+    });
+    initialState.customer.draft = normalizer.normalize(initialState.customer.draft);
+  } catch (e) {
+    console.log(e);
+  }
+}
+
+let store = createStore(help, initialState, applyMiddleware(thunk));
 
 render(
   <Provider store={store}>

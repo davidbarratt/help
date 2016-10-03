@@ -1,6 +1,10 @@
 const baseUrl = (state, action) => {
-  if (typeof state === 'undefined' && typeof window !== 'undefined') {
-    state = window.location.protocol + '//' + window.location.host;
+  if (typeof state === 'undefined') {
+    state = '';
+
+    if (typeof window !== 'undefined') {
+      state = window.location.protocol + '//' + window.location.host;
+    }
   }
   switch (action.type) {
     case 'BASE_URL_SET':

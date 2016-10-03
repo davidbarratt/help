@@ -23,7 +23,7 @@ class CustomerAction {
   updateCustomer (customer, data = {}) {
     // If we are updating a draft customer, go through that flow.
     if (typeof data.state !== 'undefined') {
-      if (data.state == 'draft') {
+      if (data.state === 'draft') {
         return {
           type: 'CUSTOMER_DRAFT_UPDATE',
           customer: customer,
