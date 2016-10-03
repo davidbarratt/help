@@ -61,6 +61,8 @@ services:
     command:
       - npm
       - start
+    environment:
+      NPM_CONFIG_UNSAFE_PERM: 'true'
 
   # To run PHP profiles, add the following to your override.
   # blackfire:

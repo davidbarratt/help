@@ -1,5 +1,5 @@
 import React from 'react';
-import { ServerRouter } from 'react-router';
+import { ServerRouter, createServerRenderContext } from 'react-router';
 import { renderToString } from 'react-dom/server';
 import { Provider } from 'react-redux';
 import { createStore, applyMiddleware } from 'redux';
@@ -23,7 +23,6 @@ class CustomerController {
     let actions = new CustomerAction(store.getState().baseUrl);
 
     store.dispatch(actions.getCustomers()).then((customers) => {
-      store.dispatch(setBaseUrl(this.getBaseUrl(request)));
       return reply(this.render(request, store));
     });
   }
@@ -36,7 +35,6 @@ class CustomerController {
     store.dispatch(actions.getCustomers()).then((customers) => {
       return store.dispatch(duplicateActions.getDuplicates());
     }).then((duplicates) => {
-      store.dispatch(setBaseUrl(this.getBaseUrl(request)));
       return reply(this.render(request, store));
     });
   }
@@ -52,6 +50,7 @@ class CustomerController {
   }
 
   render (request, store) {
+    store.dispatch(setBaseUrl(this.getBaseUrl(request)));
     return `
       <!DOCTYPE html>
       <html lang="en">
@@ -75,9 +74,10 @@ class CustomerController {
   }
 
   reactReander (request, store) {
+    let context = createServerRenderContext();
     return renderToString(
       <Provider store={store}>
-        <ServerRouter location={request.url}>
+        <ServerRouter location={request.url.path} context={context}>
           <App />
         </ServerRouter>
       </Provider>

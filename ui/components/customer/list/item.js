@@ -55,10 +55,7 @@ class CustomerListItem extends React.Component {
     } else {
       operations = (
         <div className={this.state.operationsMenu ? 'btn-group open' : 'btn-group'}>
-          <Link to={'/customer/' + customer.id + '/edit'}>{
-            ({isActive, location, href, onClick, transition}) =>
-                <button type="button" className="btn" onClick={onClick}>Edit</button>
-            }</Link>
+          <Link to={'/customer/' + customer.id + '/edit'} className="btn btn-default">Edit</Link>
           <button type="button" className="btn dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" onClick={this.toggleDropdown.bind(this)}>
             <span className="caret"></span>
             <span className="sr-only">Toggle Dropdown</span>
